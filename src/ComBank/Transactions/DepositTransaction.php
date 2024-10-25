@@ -9,10 +9,23 @@
 
 use ComBank\Bank\Contracts\BackAccountInterface;
 use ComBank\Transactions\Contracts\BankTransactionInterface;
-
-class DepositTransaction 
+use ComBank\Exceptions\ZeroAmountException;
+class DepositTransaction  extends BaseTransaction implements BankTransactionInterface
 {
+    public function __construct(float $newAmount = 0.0){
+        parent::validateAmount($newAmount);
+        $this -> amount = $newAmount;
+    }
 
+    public function getTransactionInfo(): string{
+        return 'DEPOSIT_TRANSACTION';
+    }
 
-   
+    public function getAmount(){
+        return $this -> amount;
+    }
+    
+    public function applyTransaction(BackAccountInterface $account): float{
+        return $account -> getBalance() + $this -> getAmount();
+    }
 }

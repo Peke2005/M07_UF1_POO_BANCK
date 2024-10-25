@@ -13,5 +13,6 @@ use ComBank\Support\Traits\AmountValidationTrait;
 
 abstract class BaseTransaction
 {
-    
+    protected float $amount;
+    use AmountValidationTrait;
 }
