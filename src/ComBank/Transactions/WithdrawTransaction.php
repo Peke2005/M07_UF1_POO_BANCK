@@ -7,6 +7,7 @@
  * Time: 1:22 PM
  */
 
+use ComBank\API\ApiTrait;
 use ComBank\Bank\Contracts\BackAccountInterface;
 use ComBank\Exceptions\FailedTransactionException;
 use ComBank\Exceptions\InvalidOverdraftFundsException;
@@ -30,13 +31,16 @@ class WithdrawTransaction extends BaseTransaction implements BankTransactionInte
     }
     
     public function applyTransaction(BackAccountInterface $account): float{
-        if (!$account->getOverdraft()->isGrantOverdraftFunds( $account -> getBalance() - $this -> getAmount())) {
-            if($account->getOverdraft()->getOverdraftFundsAmount() == 0){
-                throw new InvalidOverdraftFundsException( 'No puede retirar el dinero ya que no tiene suficiente dinero en la cuenta');
+        if($this -> detectFraud($this) === false){
+            if (!$account->getOverdraft()->isGrantOverdraftFunds( $account -> getBalance() - $this -> getAmount())) {
+                if($account->getOverdraft()->getOverdraftFundsAmount() == 0){
+                    throw new InvalidOverdraftFundsException( 'No puede retirar el dinero ya que no tiene suficiente dinero en la cuenta');
+                }
+                throw new FailedTransactionException('Accede el limite de lo que tienes de comodin y no tienes suficiente dinero en la cuenta');
             }
-            throw new FailedTransactionException('Accede el limite de lo que tienes de comodin y no tienes suficiente dinero en la cuenta');
+            return $account -> getBalance() - $this -> getAmount();
+        }else{
+            throw new \Exception('Es un fraude, no podemos hacer este deposito');
         }
-
-        return $account -> getBalance() - $this -> getAmount();
-    }
+}
 }

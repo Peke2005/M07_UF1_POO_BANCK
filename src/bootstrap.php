@@ -32,3 +32,11 @@ function vd($mixed)
     var_dump($mixed);
     echo "<br>";
 }
+
+function pe($mixed)
+{
+    
+    echo "<br> <b style='color: red;'>";
+    echo $mixed;
+    echo "</b><br>";
+}

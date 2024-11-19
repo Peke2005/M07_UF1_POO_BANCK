@@ -8,6 +8,8 @@
  */
 
 use ComBank\Bank\BankAccount;
+use ComBank\Bank\InternationalBankAccount;
+use ComBank\Bank\NationalBankAccount;
 use ComBank\OverdraftStrategy\SilverOverdraft;
 use ComBank\Transactions\DepositTransaction;
 use ComBank\Transactions\WithdrawTransaction;
@@ -15,6 +17,7 @@ use ComBank\Exceptions\BankAccountException;
 use ComBank\Exceptions\FailedTransactionException;
 use ComBank\Exceptions\ZeroAmountException;
 use ComBank\Exceptions\InvalidOverdraftFundsException;
+use ComBank\Person\person;
 
 require_once 'bootstrap.php';
 
@@ -61,13 +64,13 @@ try {
     $bankAccount1->transaction(new WithdrawTransaction(600));
 
 } catch (ZeroAmountException $e) {
-    pl($e->getMessage());
+    pe($e->getMessage());
 } catch (BankAccountException $e) {
-    pl($e->getMessage());
+    pe($e->getMessage());
 } catch (FailedTransactionException $e) {
-    pl('Error transaction: ' . $e->getMessage());
+    pe('Error transaction: ' . $e->getMessage());
 }catch (InvalidOverdraftFundsException $e) {
-    pl($e->getMessage());
+    pe($e->getMessage());
 }
 pl('My balance after failed last transaction : ' . $bankAccount1->getBalance());
 
@@ -104,17 +107,17 @@ try {
     
     $bankAccount2->transaction(new WithdrawTransaction(120));
 } catch (FailedTransactionException $e) {
-    pl('Error transaction: ' . $e->getMessage());
+    pe('Error transaction: ' . $e->getMessage());
 }catch (InvalidOverdraftFundsException $e) {
-    pl($e->getMessage());
+    pe($e->getMessage());
 }
 pl('My balance after failed last transaction : ' . $bankAccount2->getBalance());
 
 try {
-    pl('Doing transaction withdrawal (-20) with current balance : ' . $bankAccount2->getBalance());
+    pe('Doing transaction withdrawal (-20) with current balance : ' . $bankAccount2->getBalance());
     $bankAccount2->transaction(new WithdrawTransaction(20));
 }catch (InvalidOverdraftFundsException $e) {
-    pl($e->getMessage());
+    pe($e->getMessage());
 }
 pl('My new balance after withdrawal (-20) with funds : ' . $bankAccount2->getBalance());
 
@@ -125,5 +128,105 @@ pl("La cuenta ya se ha cerrado");
 try {
     $bankAccount2->closeAccount();
 }catch(BankAccountException $e){
-    pl($e->getMessage());
+    pe($e->getMessage());
+}
+
+//----[Bank account 3 National (No conversion)]---------/
+pl('--------- [Start testing bank account #3, (No conversion)] --------');
+try {
+$bankAccount3 = new NationalBankAccount(500, "€ (EUR)");
+pl("My Balance: ". $bankAccount3->getBalance(). " " . $bankAccount3->getCurrency());
+$persona = new person("Pol", "12345678B", "polcarbajalgarcia@gmail.com");
+
+pl("Validating Email: polcarbajalgarcia@gmail.com");
+
+pl("Email is valid");
+
+}catch (Exception $e) {
+    pe('Error: '. $e->getMessage());
+}
+
+//----[Bank account 4 Internacional]---/
+pl('--------- [Start testing bank account #4, INTERNACIONAL] --------');
+try{
+$bankAccount4 = new InternationalBankAccount(300, "€ (EUR)");
+
+pl("My Balance: ". $bankAccount4->getBalance() . " " . $bankAccount4->getCurrency());
+
+pl("Converting balance to dollars (Rates:  " . $bankAccount4->getConvertedCurrency(). " = " . $bankAccount4->getConvertedAmount() . ")");
+
+pl("El balance convertido es: ". $bankAccount4->getConvertedBalance(). " ". $bankAccount4->getConvertedCurrency());
+
+
+pl("Validating Email: polcarbajalgarcia@invalid-com");
+
+$persona2 = new person("Pol", "12345678B", "polcarbajalgarcia@invalid-com");
+
+pl("Email is valid");
+
+
+}catch(Exception $e){
+    pe('Error: '. $e->getMessage());
+}
+
+// ------ [Bank Account 5 [Comprobacion Fraude Depostio]] ------/
+pl("--------------------- Cuenta 5 [Comprobacion de Fraude Depostio] -----------------");
+try{
+    $bankAccount5 = new InternationalBankAccount(500);
+    
+    pl("Depositando 7000: Y la cuenta actual ahora esta: " . $bankAccount5->getBalance());
+
+    $bankAccount5->transaction(new DepositTransaction(7000));
+    
+    pl("Depositando 19999: Y la cuenta actual ahora esta: ". $bankAccount5->getBalance());
+
+    $bankAccount5->transaction(new DepositTransaction(19999));
+
+    pl("Depositando 21000: Y la cuenta actual ahora esta:". $bankAccount5->getBalance());
+
+    $bankAccount5->transaction(new DepositTransaction(21000));
+
+}catch (Exception $e){
+    pe("Error: ". $e->getMessage());
+}
+try{
+
+    pl("Depositando 56000: Y la cuenta actual ahora esta: " . $bankAccount5->getBalance());
+
+    $bankAccount5->transaction(new DepositTransaction(56000));
+
+}catch (Exception $e){
+    pe("Error: ". $e->getMessage());
+}
+
+
+// ------ [Bank Account 6 [Comprobacion Fraude Retiro]] ------/
+pl("--------------------- Cuenta 6 [Comprobacion de Fraude Retiro] -----------------");
+try{
+    $bankAccount6 = new InternationalBankAccount(50000);
+    
+    pl("Depositando 1300: Y la cuenta actual ahora esta: " . $bankAccount6->getBalance());
+
+    $bankAccount6->transaction(new WithdrawTransaction(1300));
+    
+    pl("Depositando 3400: Y la cuenta actual ahora esta: ". $bankAccount6->getBalance());
+
+    $bankAccount6->transaction(new WithdrawTransaction(3400));
+
+    pl("Depositando 6000: Y la cuenta actual ahora esta:". $bankAccount6->getBalance());
+
+    $bankAccount6->transaction(new WithdrawTransaction(6000));
+
+}catch (Exception $e){
+    pe("Error: ". $e->getMessage());
+}
+
+try{
+
+    pl("Depositando 11000: Y la cuenta actual ahora esta: " . $bankAccount5->getBalance());
+
+    $bankAccount5->transaction(new WithdrawTransaction(11000));
+
+}catch (Exception $e){
+    pe("Error: ". $e->getMessage());
 }

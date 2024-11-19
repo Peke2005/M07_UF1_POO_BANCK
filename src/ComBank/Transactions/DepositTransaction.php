@@ -26,6 +26,11 @@ class DepositTransaction  extends BaseTransaction implements BankTransactionInte
     }
     
     public function applyTransaction(BackAccountInterface $account): float{
-        return $account -> getBalance() + $this -> getAmount();
+        if($this -> detectFraud($this) === false){
+            return $account -> getBalance() + $this -> getAmount();
+            
+        }else{  
+            throw new \Exception('Es un fraude, no podemos hacer este deposito');
+        }
     }
 }

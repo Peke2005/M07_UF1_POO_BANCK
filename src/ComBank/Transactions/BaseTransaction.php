@@ -10,9 +10,10 @@
 use ComBank\Exceptions\InvalidArgsException;
 use ComBank\Exceptions\ZeroAmountException;
 use ComBank\Support\Traits\AmountValidationTrait;
+use ComBank\API\ApiTrait;
 
 abstract class BaseTransaction
 {
     protected float $amount;
-    use AmountValidationTrait;
+    use AmountValidationTrait, ApiTrait;
 }
