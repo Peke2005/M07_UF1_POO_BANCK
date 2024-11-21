@@ -230,3 +230,47 @@ try{
 }catch (Exception $e){
     pe("Error: ". $e->getMessage());
 }
+
+// ------ [Bank Account 7 [Comprobacion Api free, codigo postal] ------/
+pl("--------------------- Cuenta 7 [Comprobacion de Api free, codig postal] -----------------");
+try{
+$bankAccount7 = new NationalBankAccount(500);
+
+pl("Validating Email: joanrodrigues@gmail.com");
+
+$persona3 = new person("Joan", "12345678B", "joanrodrigues@gmail.com", "08904");
+
+pl("Email is valid");
+
+pl("El codigo postal que ha introducido se esta validando");
+
+pl("El codigo postal indica que usted vive en esta zona: " . $persona3->getcodigoPostal());
+// ------------------------------------------------------------------
+pl("Validating Email: BryanJR@gmail.com");
+
+$persona4 = new person("Bryan", "12345678B", "BryanJR@gmail.com");
+
+pl("Email is valid");
+
+pl("El codigo postal que ha introducido se esta validando");
+
+pl("El codigo postal indica que usted vive en esta zona: " . $persona4->getcodigoPostal());
+
+}catch(Exception $e){
+    pe('Error: '. $e->getMessage());
+}
+
+try{
+pl("Validating Email: marcmuntane@gmail.com");
+
+$persona5 = new person("Marc", "12345678B", "marcmuntane@gmail.com", "0000");
+
+pl("Email is valid");
+
+pl("El codigo postal que ha introducido se esta validando");
+
+pl("El codigo postal indica que usted vive en esta zona: " . $persona5->getcodigoPostal());
+
+}catch(Exception $e){
+    pe('Error: '. $e->getMessage());
+}

@@ -1,6 +1,7 @@
 <?php namespace ComBank\API;
 
 use ComBank\Transactions\Contracts\BankTransactionInterface;
+use Exception;
 
 trait ApiTrait 
 {   
@@ -69,6 +70,27 @@ trait ApiTrait
             }
         }
         return $fraude;
+    }
+
+    public function codigoPostal(String $codigo) {
+
+        $IniciarApi = curl_init();
+        $url = "https://api.zippopotam.us/es/". $codigo;
+    
+        curl_setopt($IniciarApi, CURLOPT_URL, $url);
+        curl_setopt_array($IniciarApi, array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true
+        ));
+    
+        $result = curl_exec($IniciarApi);
+        curl_close($IniciarApi);
+        $obj = json_decode($result, true);
+        if(!empty($obj)){
+            return $obj["places"][0]["place name"];
+        }else{
+            throw new Exception("El codigo que has introducido no es correcto");
+        }
     }
 
     /* Esta funcion no le hagas caso es solo para saber a cuanto esta la conversion del Euro al dollar, para que quede mas estetico en el index */
